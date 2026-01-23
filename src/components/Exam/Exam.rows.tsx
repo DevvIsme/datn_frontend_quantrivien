@@ -41,7 +41,7 @@ export default function ExamRow({
       <td className="px-4 py-2 border text-center  h-7">
         <div className="flex justify-center space-x-2">
           <button className="text-blue-500 hover:text-blue-700">
-            <Link to={`/exam/${exam.slug}`}>
+            <Link to={`/exam/${exam.id}`}>
               <EyeIcon className="h-5 w-5" />
             </Link>
           </button>
