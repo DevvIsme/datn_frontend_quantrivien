@@ -85,7 +85,7 @@ export default function IndexRow({
       <td className="px-6 py-4 text-center">
         <div className="flex justify-center items-center space-x-2">
           <Link
-            to={`/exam/${exam.slug}`}
+            to={`/exam/${exam.id}`}
             className="text-blue-600 hover:text-blue-800 bg-blue-50 p-2 rounded-md transition-colors hover:bg-blue-100"
             title="Xem chi tiết"
           >
