@@ -32,7 +32,7 @@ export default function AddLessonForm({ onClose, onReload }: AddLessFormProps) {
       formData.append("file", file); // Key 'file' phải trùng với backend uploadCloud.single('file')
 
       // Gọi API Upload riêng
-      const res = await axiosInstance.post("/api/upload", formData, {
+      const res = await axiosInstance.post("/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
