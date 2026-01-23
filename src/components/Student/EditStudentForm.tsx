@@ -17,6 +17,17 @@ export default function EditStudentForm({ student, onClose, onRefresh }: EditStu
     const [gender, setGender] = useState("male");
     const [avatar, setAvatar] = useState<File | null>(null);
 
+    // Hàm xử lý link ảnh thông minh (Cloudinary vs Local)
+    const getAvatarSrc = (avatarName: string | undefined) => {
+        if (!avatarName) return "https://via.placeholder.com/150";
+        // Nếu là link Cloudinary (bắt đầu bằng http)
+        if (avatarName.startsWith("http")) {
+            return avatarName;
+        }
+        // Nếu là ảnh cũ lưu trên server (sửa lại domain cho đúng với server Render của bạn)
+        return `https://datn-backend-mjeb.onrender.com/public/avatars/${avatarName}`;
+    };
+
     useEffect(() => {
         if (student) {
             setFullName(student.fullName || "");
@@ -49,10 +60,16 @@ export default function EditStudentForm({ student, onClose, onRefresh }: EditStu
             formData.append("birthday", birthday);
             formData.append("phone", phone);
             formData.append("gender", gender);
+
+            // Chỉ gửi password nếu người dùng nhập mới
             if (password) formData.append("password", password);
+
+            // Chỉ gửi avatar nếu người dùng chọn file mới
             if (avatar) formData.append("avatar", avatar);
 
-            await axiosInstance.put(`/student/update/${student.id}`, formData);
+            await axiosInstance.put(`/student/update/${student.id}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
 
             alert("Cập nhật thông tin thành công!");
             onClose();
@@ -77,22 +94,20 @@ export default function EditStudentForm({ student, onClose, onRefresh }: EditStu
                 <div className="w-full md:w-1/3 flex flex-col items-center gap-4 p-4 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                     <div className="relative group">
                         {avatar ? (
+                            // Ảnh preview khi vừa chọn file mới
                             <img
                                 src={URL.createObjectURL(avatar)}
                                 alt="New Avatar"
                                 className="w-32 h-32 object-cover rounded-full border-4 border-white shadow-md"
                             />
-                        ) : student.avatar ? (
+                        ) : (
+                            // Ảnh hiện tại (Dùng hàm getAvatarSrc để xử lý link)
                             <img
-                                src={`http://localhost:3000/public/avatars/${student.avatar}`}
+                                src={getAvatarSrc(student.avatar)}
                                 onError={(e) => (e.currentTarget.src = "https://via.placeholder.com/150")}
                                 alt="Current Avatar"
                                 className="w-32 h-32 object-cover rounded-full border-4 border-white shadow-md"
                             />
-                        ) : (
-                            <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center text-gray-400">
-                                No Img
-                            </div>
                         )}
                     </div>
 
@@ -110,7 +125,7 @@ export default function EditStudentForm({ student, onClose, onRefresh }: EditStu
                     </div>
                 </div>
 
-                {/* Cột phải: Thông tin (Grid 2 cột nhỏ) */}
+                {/* Cột phải: Thông tin */}
                 <div className="w-full md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="col-span-1 md:col-span-2">
                         <label className="block mb-2 text-sm font-semibold text-gray-700">Họ tên</label>

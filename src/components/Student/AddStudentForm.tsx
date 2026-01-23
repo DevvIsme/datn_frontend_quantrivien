@@ -14,13 +14,14 @@ export default function AddStudentForm({ onClose, onRefresh }: AddStudentFormPro
   const [birthday, setDob] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState("male");
+  const [isSubmitting, setIsSubmitting] = useState(false); // Thêm state loading
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const isConfirmed = window.confirm("Xác nhận thêm sinh viên!");
-      if (!isConfirmed) return;
+    if (!window.confirm("Xác nhận thêm sinh viên!")) return;
 
+    setIsSubmitting(true);
+    try {
       const formData = new FormData();
       formData.append("fullName", fullName);
       formData.append("email", email);
@@ -30,14 +31,19 @@ export default function AddStudentForm({ onClose, onRefresh }: AddStudentFormPro
       formData.append("gender", gender);
       if (avatar) formData.append("avatar", avatar);
 
-      const response = await axiosInstance.post(`/student/create`, formData);
-      console.log(response.data);
+      // Gửi request
+      await axiosInstance.post(`/student/create`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       alert("Thêm sinh viên thành công");
       onClose();
       onRefresh();
     } catch (error: any) {
       console.error(error.response?.data);
       alert(error.response?.data?.message || "Lỗi khi thêm sinh viên");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -167,9 +173,10 @@ export default function AddStudentForm({ onClose, onRefresh }: AddStudentFormPro
         </button>
         <button
           type="submit"
-          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition transform active:scale-95"
+          disabled={isSubmitting}
+          className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-bold shadow-md hover:bg-blue-700 hover:shadow-lg transition transform active:scale-95 disabled:opacity-50"
         >
-          Thêm mới
+          {isSubmitting ? "Đang lưu..." : "Thêm mới"}
         </button>
       </div>
     </form>
