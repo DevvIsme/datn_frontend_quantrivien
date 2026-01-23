@@ -54,7 +54,7 @@ export default function AddCourseForm({ onClose, onReload }: AddFormProps) {
         name: name,
         topic_id: topic,
         description: description,
-        type: "text",
+        type: "0",
         start_date: isUnlimited ? "" : startDate,
         end_date: isUnlimited ? "" : endDate,
         price: isPaid ? price : 0,
